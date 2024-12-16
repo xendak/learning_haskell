@@ -53,3 +53,23 @@ Generate Pascal’s Triangle as an infinite list of rows. For example:
 
 take 5 pascal
 -- [[1], [1,1], [1,2,1], [1,3,3,1], [1,4,6,4,1]]
+
+
+
+-- curr doubt
+currently im trying this
+
+7. Pascal's Triangle Rows
+
+Write a function pascalRows that generates an infinite list of rows of Pascal’s Triangle:
+
+ I kind of have an idea of what to do, but i don't really understand how i can do it...
+
+so basically what i want to do is
+
+when received a list,
+grab the "pairs" that make up that list, ie
+[1,3,3,1] -> [[1,3], [3, 3], [3, 1]]
+that should output the next roll of pascal
+1 : sum of each pair in my list of lists, then end with ++ [1]
+and we do that over and over

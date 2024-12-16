@@ -46,8 +46,6 @@ repeatSeqCycle xs = cycle xs
 repeatSeqSelf :: [a] -> [a]
 repeatSeqSelf xs = xs ++ repeatSeqSelf xs
 
-
-
 -- 3.
 nthFib :: Int -> Int
 nthFib x = last (take x fibs)
@@ -74,6 +72,89 @@ collatzLenSeqC :: [Int]
 collatzLenSeqC = map (length . collatz) [1..]
 
 -- 6.
+mergeInfList :: (Ord a) => [a] -> [a] -> [a]
+mergeInfList [] _ = []
+mergeInfList _ [] = []
+mergeInfList (x:xs) (z:zs)
+  | x <= z = x : mergeInfList xs (z:zs)
+  | otherwise = z : mergeInfList (x:xs) zs
+
+-- 7.
+-- pascalRows :: [[Int]]
+-- -- pascalRows = [1] : [1,1] : genpascal [1..]
+-- pascalRows = genpascal [[1]]
+--   where
+--     genpascal :: [[Int]] -> [[Int]]
+--     genpascal [] = [1] 
+--     genpascal (x:xs) 
+    
+
+-- since i wasnt progressing at pascal inf, i tried to split everything
+-- into multiple functions to see if my head would work better that way
+splitPairs :: [a] -> [[a]]
+splitPairs [] = []
+splitPairs [_] = []
+splitPairs (x:y:xs) = [x, y] : splitPairs (y:xs)
+
+-- using zip instead of recursion
+makePairs :: [a] -> [(a,a)]
+makePairs xs = zip xs (tail xs)
+
+sumTuple :: Num a => [(a,a)] -> [a]
+sumTuple [] = []
+sumTuple ((a,b):xs) = (a + b) : sumTuple xs
+
+-- more implementation to learn
+sumT2 :: Num a => [(a,a)] -> [a]
+sumT2 = map (uncurry (+))
+
+sumPairs :: (Num a) => [[a]] -> [a]
+-- original of my take, corrected my take with compiler help.
+-- sumPairs [] = []
+-- sumPairs (head:tail) = sum head : sumPairs tail
+sumPairs = map sum
+
+-- computes the next pascal row, given we have at least one row
+nextRow :: (Num a) => [a] -> [a]
+nextRow [] = []
+nextRow xs = 1 : sumTuple (makePairs xs) ++ [1]
+
+-- then we can iterate ? i thought it was for int only, guess its generic
+pascalRows :: (Num a) => [[a]]
+pascalRows = iterate nextRow [1]
+
+powerOfTwoSum :: Num a => [a] -> [a]
+powerOfTwoSum (x:xs) = (x+x) : xs
+
+-- putting everything in one
+pAglomerate :: Num a => [[a]]
+pAglomerate = iterate helper [1]
+  where
+    helper :: Num a => [a] -> [a]
+    helper [] = []  -- this is useless since we can stricly once with [1] as input
+    helper xs = 1 : sumPair (makePair xs) ++ [1]
+    
+    sumPair :: Num a => [(a,a)] -> [a]
+    sumPair = map (uncurry (+))
+    -- uncurry applies the function, to a (pair) // my understanding
+    -- so if you have (a, b) and uncurry with *, it will be return a*b
+    -- then we map over the entire list so we go back to being a list of a instead of list of pairs of a
+
+    makePair :: [a] -> [(a,a)]
+    makePair xs = zip xs (tail xs)
+    -- this is basically saying, (x:y:xs) => recursion of [(x,y)] : f (y:xs)
+
+-- 8.
+cumulativeSums :: (Num a) => [a] -> [a]
+-- consider using scanl
+-- cumulativeSums xs = scanl (+) 0 xs
+-- it applies a function to the list, but saving the results, as opposed to foldl
+cumulativeSums xs = helper xs 0
+  where
+    helper :: (Num a) => [a] -> a -> [a]
+    helper [] _ = []
+    helper (x:xs) n = (n+x) : helper xs (n+x) 
+
 
 main :: IO ()
 main = do
@@ -87,3 +168,12 @@ main = do
   print $ take 111 primes
   print $ nthFib 20
   print $ take 20 collatzLenSeq
+  print $ take 20 $ mergeInfList primes fibs
+  print $ makePairs [1,3,3,1]
+  print $ sumTuple $ makePairs [1,3,3,1]
+  print $ sumT2 $ makePairs [1,3,3,1]
+  print $ nextRow [1,3,3,1]
+  print $ take 10 pascalRows
+  print $ take 10 (iterate powerOfTwoSum [1])
+  print $ take 5 pAglomerate
+  print $ cumulativeSums [1, 5, 9, 12, 15]
