@@ -55,10 +55,10 @@ primes :: [Int]
 -- try 1
 -- primes = [2..] ++ filter (\x -> x `mod` last primes == 0) primes 
 -- try 2
-primes = filterOnPosition [2..]
+primes = sieveOfEratosthenes [2..]
   where
-    filterOnPosition :: [Int] -> [Int]
-    filterOnPosition (y:ys) = y : filterOnPosition (filter (\x -> x `mod` y /= 0) ys)
+    sieveOfEratosthenes :: [Int] -> [Int]
+    sieveOfEratosthenes (head:tail) = head : sieveOfEratosthenes (filter (\x -> x `mod` head /= 0) tail)
 
 -- 5.
 collatzLenSeq :: [Int]
